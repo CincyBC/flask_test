@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from script import process_csv
+from process import process_csv
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
