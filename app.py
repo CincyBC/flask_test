@@ -39,3 +39,6 @@ def create_app():
         return send_from_directory('output', filename)
 
     return app
+
+if '__name__'=='__main__':
+    create_app.run()
