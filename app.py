@@ -14,6 +14,11 @@ def allowed_file(filename):
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def index():
+    return "<h1>Welcome to the UWW Prediciton App</h1>", 200 
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -30,13 +35,13 @@ def upload():
 
     return render_template('upload.html')
 
-@app.route('/download')
-def download():
-    return render_template('download.html', files=os.listdir('output'))
+# @app.route('/download')
+# def download():
+#     return render_template('download.html', files=os.listdir('output'))
 
-@app.route('/download/<filename>')
-def download_file(filename):
-    return send_from_directory('output', filename)
+# @app.route('/download/<filename>')
+# def download_file(filename):
+#     return send_from_directory('output', filename)
 
 # Invalid URL
 @app.errorhandler(404)
