@@ -5,18 +5,19 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from process import process_csv
 
-ALLOWED_EXTENSIONS = set(['csv'])
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 app = Flask(__name__)
+
+# ALLOWED_EXTENSIONS = set(['csv'])
+UPLOAD_FOLDER = 'output/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# def allowed_file(filename):
+#     return '.' in filename and \
+#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET'])
 def index():
-    return "<h1>Welcome to the UWW Prediciton App</h1>", 200 
+    return "<h1>Welcome to the UWW Prediction App</h1>", 200 
 
 
 # @app.route('/upload', methods=['GET', 'POST'])
@@ -44,11 +45,11 @@ def index():
 #     return send_from_directory('output', filename)
 
 # Invalid URL
-@app.errorhandler(404)
-def page_not_found(e):
-	return render_template("404.html"), 404
+# @app.errorhandler(404)
+# def page_not_found(e):
+# 	return render_template("404.html"), 404
 
-# Internal Server Error
-@app.errorhandler(500)
-def page_not_found(e):
-	return render_template("500.html"), 500
+# # Internal Server Error
+# @app.errorhandler(500)
+# def page_not_found(e):
+# 	return render_template("500.html"), 500
