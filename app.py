@@ -7,7 +7,7 @@ from process import process_csv
 
 app = Flask(__name__)
 
-# ALLOWED_EXTENSIONS = set(['csv'])
+ALLOWED_EXTENSIONS = set(['csv'])
 UPLOAD_FOLDER = 'output/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
