@@ -11,34 +11,39 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def create_app():
-    app = Flask(__name__)
 
-    @app.route('/upload', methods=['GET', 'POST'])
-    def upload():
-        if request.method == 'POST':
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                new_filename = f'{filename.split(".")[0]}_{str(datetime.now())}.csv'
-                save_location = os.path.join('input', new_filename)
-                file.save(save_location)
+app = Flask(__name__)
 
-                output_file = process_csv(save_location)
-                #return send_from_directory('output', output_file)
-                return redirect(url_for('download'))
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            new_filename = f'{filename.split(".")[0]}_{str(datetime.now())}.csv'
+            save_location = os.path.join('input', new_filename)
+            file.save(save_location)
 
-        return render_template('upload.html')
+            output_file = process_csv(save_location)
+            #return send_from_directory('output', output_file)
+            return redirect(url_for('download'))
 
-    @app.route('/download')
-    def download():
-        return render_template('download.html', files=os.listdir('output'))
+    return render_template('upload.html')
 
-    @app.route('/download/<filename>')
-    def download_file(filename):
-        return send_from_directory('output', filename)
+@app.route('/download')
+def download():
+    return render_template('download.html', files=os.listdir('output'))
 
-    return app
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_from_directory('output', filename)
 
-if '__name__'=='__main__':
-    create_app.run()
+# Invalid URL
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template("404.html"), 404
+
+# Internal Server Error
+@app.errorhandler(500)
+def page_not_found(e):
+	return render_template("500.html"), 500
