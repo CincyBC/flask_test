@@ -4,6 +4,7 @@
       <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
       <!-- Favicon -->
       <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"/>
       
       <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
       <script>
@@ -20,85 +21,79 @@
     </head>
     <body id="main">
       <div class="row">
-          <div id="drop-area">
-            <form class="my-form">
-              <p>Upload multiple .CSVs by clicking the button or drag and drop onto the dashed region</p>
-              <input type="file" name="files[]" id="fileElem" multiple accept="csv/*" onchange="handleFiles(this.files)">
-              <label class="button" for="fileElem">Choose Files</label>
-              <p>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul class=flashes>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
-                </p>
-            </form>
-            </div>
+        <main>
+            <section class="droparea">
+                <i class="far fa-images"></i>
+                <form class="my-form">
+                    <p>Drag and Drop CSV files here</p>
+                    <input type="file" id="fileElem" name="files" multiple accept="csv/*" onchange="handleFiles(this.files)">
+                  </form>
+                <!-- <p>Drag and Drop CSV files here</p> -->
+            </section>
+        
           </div>
-        </div>
         <div class ="row">
         <h2 align="center">Logging will appear here:</h2>
         <div class="logging_window">
           <pre id="output"></pre>
         </div>
+    </main>
       </div>
     </body>
 
   </html>
   <script>
-    let dropArea = document.getElementById('drop-area')
+    let dropArea = document.querySelector('.droparea');
+                ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false)
+            })
 
-    ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false)
-    })
+            function preventDefaults (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            }
 
-    function preventDefaults (e) {
-    e.preventDefault()
-    e.stopPropagation()
-    }
+            const highlight = () => dropArea.classList.add("green-border");
 
-    ;['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false)
-    })
+            const unhighlight = () => dropArea.classList.remove("green-border");
 
-    ;['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false)
-    })
+            ;['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false)
+            })
 
-    function highlight(e) {
-    dropArea.classList.add('highlight')
-    }
+            ;['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false)
+            })
 
-    function unhighlight(e) {
-    dropArea.classList.remove('highlight')
-    }
-    dropArea.addEventListener('drop', handleDrop, false)
+            dropArea.addEventListener("drop", handleDrop, false);
 
-    function handleDrop(e) {
-    let dt = e.dataTransfer
-    let files = dt.files
+        function handleDrop(e) {
+        let dt = e.dataTransfer
+        let files = dt.files
 
-    handleFiles(files)
-    }
-    function handleFiles(files) {
-    ([...files]).forEach(uploadFile)
-    }
+        handleFiles(files);
+        }
 
-    function uploadFile(file) {
+        function handleFiles(files) {
+            ([...files]).forEach(uploadFile)
+        }
+        function uploadFile(file) {
             let url = ''
             let formData = new FormData()
+            console.log(file);
 
-            formData.append('file', file)
+            formData.append("file", file);
 
             fetch(url, {
+                // headers:{ 'Accept': 'text/csv',
+                //         'Content-Type': 'text/csv',
+                //         'action': '/',
+                //         'name':"files"},
                 method: 'POST',
+                // mode: "no-cors",
                 body: formData
             })
-            .then(() => { /* Done. Inform the user */ })
+            .then(() => {console.log('Finished');})
             .catch(() => { /* Error. Inform the user */ })
             }
   </script>
@@ -118,45 +113,57 @@
     margin: auto;
 }
 
-#drop-area {
-  border: 2px dashed #ccc;
-  border-radius: 20px;
-  width: 480px;
-  font-family: sans-serif;
-  margin: 100px auto;
-  padding: 20px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-#drop-area.highlight {
-  border-color: purple;
+
+html {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333;
+  line-height: 1.5rem;
 }
-p {
-  margin-top: 0;
+
+body {
+  background-color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
-.my-form {
-  margin-bottom: 10px;
+
+main {
+  display: flex;
+  flex-direction: column;
 }
-#gallery {
-  margin-top: 10px;
+
+header {
+  margin-top: 1rem;
 }
-#gallery img {
-  width: 150px;
-  margin-bottom: 10px;
-  margin-right: 10px;
-  vertical-align: middle;
+
+.droparea {
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 384px;
+  max-width: 100%;
+  height: 160px;
+  border: 4px dashed grey;
+  border-radius: 15px;
 }
-.button {
-  display: inline-block;
-  padding: 10px;
-  background: #ccc;
-  cursor: pointer;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+
+.droparea i {
+  font-size: 3rem;
+  flex-grow: 1;
+  padding-top: 1rem;
 }
-.button:hover {
-  background: #ddd;
-}
-#fileElem {
-  display: none;
+
+.green-border {
+  border-color: orange;
 }
 
 

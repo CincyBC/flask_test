@@ -30,40 +30,43 @@ logger.add("run/job.log", format="{time} - {message}")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-
-        if 'files[]' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+        # if 'files[]' not in request.files:
+        #     flash('No file part')
+        #     return redirect(request.url)
 
         files = request.files.getlist('files[]')
+        logger.info(files)
 
         for file in files:
+            logger.info(file)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                logger.info(f"File Saved: {filename}")
 
-        flash('File(s) successfully uploaded')
-        output_file = run_script(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # flash('File(s) successfully uploaded')
+        # run_script(os.path.join(UPLOAD_FOLDER))
         return redirect(url_for('download'))
 
     return render_template('index.html'), 200 
 
 
-# @app.route('/upload', methods=['GET', 'POST'])
-# def upload():
-#     if request.method == 'POST':
-#         file = request.files['file']
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             save_location = os.path.join('input', filename)
-#             file.save(save_location)
-#             with open('config.yaml', 'r') as fn:
-#                 config = yaml.safe_load(fn)
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            logger.info(file.filename)
+            filename = secure_filename(file.filename)
+            save_location = os.path.join(UPLOAD_FOLDER, filename)
+            logger.info(save_location)
+            file.save(save_location)
 
-#             output_file = run_script(save_location)
-#             return redirect(url_for('download'))
+            output_file = run_script(save_location)
+            # return send_from_directory('run/model_scoring', '')
+            return redirect(url_for('download'))
 
-#     return render_template('upload.html')
+    return render_template('upload.html')
 
 @app.route('/download')
 def download():
