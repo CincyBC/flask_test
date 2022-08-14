@@ -14,18 +14,12 @@ from pipeline.model_scoring import ModelScoring
 from pipeline.post_scoring_engineering import PostScoringEngineering
 from pipeline.create_viz import CreateViz
 
-# parser = argparse.ArgumentParser(description='Command Line Arguments For ' +
-#                                  'Driver Code')
-# parser.add_argument('config_yaml',
-#                     help='Path to config.yaml file.')
-
-# parser.add_argument('--211', dest='fp_211', required=True,
-#                     help='Path to 211 data folder'
-#                    )
-
+from loguru import logger
+logger.add("run/job.log", format="{time} - {message}")
 
 def run(config):
     if config['runFLAGS']['runETL']:
+        logger.info(f"Starting ETL")
         input_url = config['etl_config']['url']
         output_fp = os.path.join(config['output_fp'], 'etl')
         pathlib.Path(output_fp).mkdir(parents=True, exist_ok=True) 
@@ -36,9 +30,8 @@ def run(config):
         process.etl()
         process.write_output()
         
-        
-        
     if config['runFLAGS']['runDATA_QUALITY']:
+        logger.info(f"Starting Data Quality")
         if config['data_qulaity_config']['data_fp']:
             input_fp = config['data_qulaity_config']['data_fp']
         else:
@@ -50,10 +43,9 @@ def run(config):
         process.read_input()
         process.data_quality()
         process.write_output()
-
-
-        
+     
     if config['runFLAGS']['runPREPROCESSING']:
+        logger.info(f"Starting Preprocessing")
         if config['preprocessing_config']['data_fp']:
             input_fp = config['preprocessing_config']['data_fp'] 
         else:
@@ -70,8 +62,8 @@ def run(config):
                              )
         process.write_output()
 
-        
     if config['runFLAGS']['runEDA']:
+        logger.info(f"Starting EDA")
         if config['eda_config']['data_fp']:
             input_fp = config['eda_config']['data_fp'] 
         else:
@@ -84,8 +76,9 @@ def run(config):
         process.eda()
         process.write_output()
 
-        
+        logger.info(f"Finished")      
     if config['runFLAGS']['runFEATURE_ENGINEERING']:
+        logger.info(f"Starting Feature Engineering")
         if config['feature_engineering_config']['data_fp']:
             input_fp = config['feature_engineering_config']['data_fp'] 
         else:
@@ -103,9 +96,9 @@ def run(config):
         process.read_input()
         process.feature_engineering()
         process.write_output()
-
-        
+       
     if config['runFLAGS']['runMODEL_TRAINING']:
+        logger.info(f"Starting Model Training")
         if config['model_training_config']['data_fp']:
             input_fp = config['model_training_config']['data_fp'] 
         else:
@@ -122,9 +115,9 @@ def run(config):
         process.read_input()
         process.model_training(config['model_training_config']['test_size'])
         process.write_output()
-
-        
+      
     if config['runFLAGS']['runMODEL_SCORING']:
+        logger.info(f"Starting Predictions")
         if config['model_scoring_config']['data_fp']:
             input_fp = config['model_scoring_config']['data_fp'] 
         else:
@@ -156,12 +149,12 @@ def run(config):
         process.model_scoring(forecast_start, forecast_end)
         process.write_output()
 
-
     if config['runFLAGS']['runPOST_SCORING_ENGINEERING']:
+        logger.info('Starting post scoring engineering')
         if config['post_scoring_engineering_config']['data_fp']:
             input_fp = config['post_scoring_engineering_config']['data_fp'] 
         else:
-            input_fp = s.path.join(config['output_fp'], 
+            input_fp = os.path.join(config['output_fp'], 
                                    'model_scoring', 'predictions.csv')
         output_fp = os.path.join(config['output_fp'], 
                                  'post_scoring_engineering')
@@ -173,7 +166,6 @@ def run(config):
         process.read_input()
         process.post_scoring_engineering()
         process.write_output()
-
 
     if config['runFLAGS']['runCREATE_VIZ']:
         if config['create_viz_config']['data_fp']:

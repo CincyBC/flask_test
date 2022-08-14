@@ -1,36 +1,69 @@
 import os
-
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+import yaml
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory, Response, flash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from run import run_script
+from time import sleep
+from loguru import logger
 
 app = Flask(__name__)
 
+app.secret_key = "secret key"
+
 ALLOWED_EXTENSIONS = set(['csv'])
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+path = os.getcwd()
+# file Upload
+UPLOAD_FOLDER = os.path.join(path, 'uploads')
+
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/', methods=['GET'])
+# configure logger
+logger.add("run/job.log", format="{time} - {message}")
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return "<h1>DataKind</h1><br><h2>Partning with United Way</h2>", 200 
-
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
     if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            save_location = os.path.join('input', filename)
-            file.save(save_location)
 
-            output_file = run_script(save_location)
-            return redirect(url_for('download'))
+        if 'files[]' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
 
-    return render_template('upload.html')
+        files = request.files.getlist('files[]')
+
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        flash('File(s) successfully uploaded')
+        output_file = run_script(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return redirect(url_for('download'))
+
+    return render_template('index.html'), 200 
+
+
+# @app.route('/upload', methods=['GET', 'POST'])
+# def upload():
+#     if request.method == 'POST':
+#         file = request.files['file']
+#         if file and allowed_file(file.filename):
+#             filename = secure_filename(file.filename)
+#             save_location = os.path.join('input', filename)
+#             file.save(save_location)
+#             with open('config.yaml', 'r') as fn:
+#                 config = yaml.safe_load(fn)
+
+#             output_file = run_script(save_location)
+#             return redirect(url_for('download'))
+
+#     return render_template('upload.html')
 
 @app.route('/download')
 def download():
@@ -48,4 +81,24 @@ def page_not_found(e):
 # Internal Server Error
 @app.errorhandler(500)
 def page_not_found(e):
-	return render_template("500.html"), 500
+	return render_template("500.html"), 500 
+
+# adjusted flask_logger
+def flask_logger():
+    """creates logging information"""
+    open("run/job.log", 'w').close()
+    with open("run/job.log") as log_info:
+        for i in range(10000):
+            data = log_info.read()
+            yield data.encode()
+            sleep(1)
+
+@app.route("/log_stream", methods=["GET"])
+def stream():
+    """returns logging information"""
+    return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+
+if __name__ == "__main__":
+    # Create empty job.log, old logging will be deleted
+    
+    app.run(host="0.0.0.0", port=5000, threaded=True, static_folder="static/")
