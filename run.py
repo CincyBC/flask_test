@@ -15,11 +15,9 @@ from pipeline.post_scoring_engineering import PostScoringEngineering
 from pipeline.create_viz import CreateViz
 
 from loguru import logger
-logger.add("run/job.log", format="{time} - {message}")
 
 def run(config):
     if config['runFLAGS']['runETL']:
-        logger.info(f"Starting ETL")
         input_url = config['etl_config']['url']
         output_fp = os.path.join(config['output_fp'], 'etl')
         pathlib.Path(output_fp).mkdir(parents=True, exist_ok=True) 
@@ -31,7 +29,6 @@ def run(config):
         process.write_output()
         
     if config['runFLAGS']['runDATA_QUALITY']:
-        logger.info(f"Starting Data Quality")
         if config['data_qulaity_config']['data_fp']:
             input_fp = config['data_qulaity_config']['data_fp']
         else:
@@ -45,7 +42,6 @@ def run(config):
         process.write_output()
      
     if config['runFLAGS']['runPREPROCESSING']:
-        logger.info(f"Starting Preprocessing")
         if config['preprocessing_config']['data_fp']:
             input_fp = config['preprocessing_config']['data_fp'] 
         else:
@@ -63,7 +59,6 @@ def run(config):
         process.write_output()
 
     if config['runFLAGS']['runEDA']:
-        logger.info(f"Starting EDA")
         if config['eda_config']['data_fp']:
             input_fp = config['eda_config']['data_fp'] 
         else:
@@ -75,10 +70,8 @@ def run(config):
         process.read_input()
         process.eda()
         process.write_output()
-
-        logger.info(f"Finished")      
+ 
     if config['runFLAGS']['runFEATURE_ENGINEERING']:
-        logger.info(f"Starting Feature Engineering")
         if config['feature_engineering_config']['data_fp']:
             input_fp = config['feature_engineering_config']['data_fp'] 
         else:
@@ -98,7 +91,6 @@ def run(config):
         process.write_output()
        
     if config['runFLAGS']['runMODEL_TRAINING']:
-        logger.info(f"Starting Model Training")
         if config['model_training_config']['data_fp']:
             input_fp = config['model_training_config']['data_fp'] 
         else:
@@ -117,7 +109,6 @@ def run(config):
         process.write_output()
       
     if config['runFLAGS']['runMODEL_SCORING']:
-        logger.info(f"Starting Predictions")
         if config['model_scoring_config']['data_fp']:
             input_fp = config['model_scoring_config']['data_fp'] 
         else:
@@ -150,7 +141,6 @@ def run(config):
         process.write_output()
 
     if config['runFLAGS']['runPOST_SCORING_ENGINEERING']:
-        logger.info('Starting post scoring engineering')
         if config['post_scoring_engineering_config']['data_fp']:
             input_fp = config['post_scoring_engineering_config']['data_fp'] 
         else:
@@ -183,15 +173,15 @@ def run(config):
         process.create_viz()
         process.write_output()
 
-    logger.info('Finished Processing')
-
 def run_script(files:list, location):
     with open('config.yaml', 'r') as fn:
         config = yaml.safe_load(fn)
 
     config['feature_engineering_config']['data_fp'] = os.path.join(location, files[0])
-    
-    return run(config)
+    try:
+        return run(config)
+    except Exception as e:
+        logger.info(e)
 
 
 # if __name__ == '__main__':

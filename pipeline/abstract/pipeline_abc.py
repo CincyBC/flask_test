@@ -1,6 +1,6 @@
 import os
 import sys
-import logging
+from loguru import logger
 
 from abc import ABC, abstractmethod
 
@@ -28,15 +28,14 @@ class init_abc(ABC):
         self.input = input_path
         self.output = output_path
 
-
+    logger.add("run/job.log", format="{time} - {message}")
     def __version__(self):
         print("0.1")
         return "0.1"
 
     def _logger(self):
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-        log = logging.getLogger(__name__)
-        return log
+        
+        return logger
 
     @abstractmethod
     def read_input(self):

@@ -42,7 +42,7 @@ def run_model():
     files = os.listdir(UPLOAD_FOLDER)
     run_script(files, UPLOAD_FOLDER)
 
-    return ''
+    return send_from_directory('run/model_scoring/', 'predictions.csv')
 
 
 # @app.route('/upload', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def flask_logger():
         for i in range(1000000):
             data = log_info.read()
             yield data.encode()
-            sleep(5)
+            sleep(1)
 
 @app.route("/log_stream", methods=["GET"])
 def stream():

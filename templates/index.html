@@ -1,50 +1,41 @@
-<html lang="en" class="no-js">
+<html>
 
 <head>
     <title>DataKind-UW Jackson County</title>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <!-- Favicon -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
 </head>
 
 <body id="main">
-    <div>
-        <img src="{{ url_for('static', filename='images/DK_LOGO_R_WHT.svg') }}" class="
-                        h-10
-                        block
-                        w-auto
-                    " />
+    <div style="padding:12px 20px; justify-content:left;">
+        <img src="{{ url_for('static', filename='images/DK_LOGO_R_WHT.svg') }}" class="h-10 block w-auto" />
     </div>
     <main>
-    <section class="droparea" id="droparea">
-        <i class="far fa-images"></i>
-        <form class="my-form">
-            <p>Drag and Drop CSV files here</p>
-            <input type="file" id="fileElem" name="files" multiple accept="csv/*" onchange="handleFiles(this.files)">
-        </form>
-    </section>
-</main>
-<main>
-    <div class="row">
-        <section id="run_model">
+        <section class="droparea" id="droparea">
+            <i class="far fa-images" style="justify-content: center;"/>
+            <form class="my-form">
+                <p class="largetext" style="justify-content: left;">Drag and Drop CSV files here</p>
+                <input type="file" id="fileElem" name="files" multiple accept="csv/*"
+                    onchange="handleFiles(this.files)" style="rgb(149 149 149)">
+            </form>
             <form method="POST" action="/run_model">
-                <input type="button" id="runModel" value="Run Model">
+                <input type="button" id="runModel" value="Run Model" style="rgb(149 149 149)">
             </form>
         </section>
-    </div>
-</main>
-<main>
-    <div class="row">
-        <section id="logger">
-            <h2 align="center">Logging will appear here:</h2>
-            <div class="logging_window">
-                <pre id="output"></pre>
-            </div>
-        </section>
-    </div>
-</main>
+    </main>
+    <main>
+        <div class="row">
+            <section id="logger" style="">
+                <h2 align="center">Logging will appear here:</h2>
+                <div class="logging_window">
+                    <pre id="output"></pre>
+                </div>
+            </section>
+        </div>
+    </main>
 </body>
 
 </html>
@@ -122,7 +113,7 @@
     }
 </script>
 <style>
-    
+
 </style>
 
 </html>
