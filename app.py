@@ -84,10 +84,10 @@ def flask_logger():
     """creates logging information"""
     open("run/job.log", 'w').close()
     with open("run/job.log") as log_info:
-        for i in range(10000):
+        for i in range(1000000):
             data = log_info.read()
             yield data.encode()
-            sleep(1)
+            sleep(5)
 
 @app.route("/log_stream", methods=["GET"])
 def stream():
