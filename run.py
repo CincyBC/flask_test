@@ -183,11 +183,13 @@ def run(config):
         process.create_viz()
         process.write_output()
 
-def run_script(filename):
+    logger.info('Finished Processing')
+
+def run_script(files:list, location):
     with open('config.yaml', 'r') as fn:
         config = yaml.safe_load(fn)
 
-    config['feature_engineering_config']['data_fp'] = filename
+    config['feature_engineering_config']['data_fp'] = os.path.join(location, files[0])
     
     return run(config)
 
