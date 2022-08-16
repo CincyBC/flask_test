@@ -98,8 +98,8 @@ header {
 }
 
 input[type=file] {
-  padding:5px; 
-  border:2px solid #ccc; 
+  padding:5px;
+  border:2px solid #ccc;
   -webkit-border-radius: 5px;
   border-radius: 5px;
 }
@@ -109,10 +109,12 @@ input[type=file]:focus {
 }
 
 input[type=button] {
-  padding:5px 15px; 
-  background:#ccc; 
+  padding:5px 15px;
+  background:#ccc;
   border:0 none;
   cursor:pointer;
   -webkit-border-radius: 5px;
-  border-radius: 5px; 
+  border-radius: 5px;
+  display: inline-block;
+  margin: 0 auto;
 }
