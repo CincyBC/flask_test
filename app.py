@@ -114,8 +114,8 @@ def page_not_found(e):
 # adjusted flask_logger
 def flask_logger():
     """creates logging information"""
-    open("run/job.log", 'w').close()
-    with open("run/job.log") as log_info:
+    open("static/log/job.log", 'w').close()
+    with open("static/log/job.log") as log_info:
         for i in range(1000000):
             data = log_info.read()
             yield data.encode()
