@@ -51,12 +51,13 @@ def run_forecast():
 
     config['preprocessing_config']['data_fp'] = fp_211
     try:
-        return run(config)
+        run(config)
     except Exception as e:
         logger.info(e)
 
     # forecast_fn = os.path.join(config['output_fp'], 'create_viz',
     #                            'forecast.png')
+    return redirect(url_for('forecast'))
 
 @app.route('/show_forecast')
 def show_forecast():
